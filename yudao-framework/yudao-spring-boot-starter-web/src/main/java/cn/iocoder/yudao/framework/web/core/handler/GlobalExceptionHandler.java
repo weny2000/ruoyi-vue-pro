@@ -298,7 +298,22 @@ public class GlobalExceptionHandler {
                 // 忽略日志，避免影响主流程
             }
         }
-        return CommonResult.error(ex.getCode(), ex.getMessage());
+        
+        // 支持国际化的错误消息
+        String message = ex.getMessage();
+        if (ex.getErrorCode() != null) {
+            try {
+                // 尝试获取国际化消息
+                String i18nMessage = ex.getErrorCode().getI18nMsg();
+                if (StrUtil.isNotEmpty(i18nMessage)) {
+                    message = i18nMessage;
+                }
+            } catch (Exception ignored) {
+                // 国际化失败时使用原始消息
+            }
+        }
+        
+        return CommonResult.error(ex.getCode(), message);
     }
 
     /**
